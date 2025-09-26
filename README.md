@@ -351,7 +351,7 @@ sta c        ; Store the result in 'c'
       ```
 
    - **Example Output**:
-      ```
+      ```sh
       vvp -n computer
       VCD info: dumpfile machine.vcd opened for output.
       Memory: set [0x00] => 0x0a (10)
