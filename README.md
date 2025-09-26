@@ -297,7 +297,7 @@ sta c        ; Store the result in 'c'
 
    - **Running the Compiler**:
       ```sh
-      $ ./compiler input.txt
+      $ ./compiler example.slang
       Step 1: Lexical Analysis
       Lexical success ...
       Step 2: Parsing
