@@ -6,7 +6,7 @@
 #define MAX_LENGTH 100
 
 typedef enum {
-    TOKEN_INT, TOKEN_IF,TOKEN_ELSE, TOKEN_IDENTIFIER, TOKEN_NUMBER,
+    TOKEN_INT,TOKEN_WHILE, TOKEN_IF,TOKEN_ELSE, TOKEN_IDENTIFIER, TOKEN_NUMBER,
     TOKEN_ASSIGN, TOKEN_PLUS, TOKEN_MINUS, TOKEN_MULTIPLY, TOKEN_DIVIDE, 
     TOKEN_OUT,TOKEN_SEMICOLON,
     TOKEN_LPAREN, TOKEN_RPAREN, TOKEN_LBRACE, TOKEN_RBRACE,
@@ -15,7 +15,7 @@ typedef enum {
 } TkType;
 
 const char *typeStr[] = {
-    "TOKEN_INT", "TOKEN_IF","TOKEN_ELSE", "TOKEN_IDENTIFIER", "TOKEN_NUMBER",
+    "TOKEN_INT", "TOKEN_WHILE", "TOKEN_IF","TOKEN_ELSE", "TOKEN_IDENTIFIER", "TOKEN_NUMBER",
     "TOKEN_ASSIGN", "TOKEN_PLUS", "TOKEN_MINUS","TOKEN_MULTIPLY", "TOKEN_DIVIDE", 
     "TOKEN_OUT","TOKEN_SEMICOLON",
     "TOKEN_LPAREN", "TOKEN_RPAREN", "TOKEN_LBRACE", "TOKEN_RBRACE", 
@@ -74,6 +74,7 @@ void lexAnalysis(const char *input, FILE *opFile) {
             else if (strcmp(buffer, "if") == 0) type = TOKEN_IF;
             else if (strcmp(buffer, "else") == 0) type = TOKEN_ELSE;
             else if (strcmp(buffer, "out") == 0) type = TOKEN_OUT;
+            else if (strcmp(buffer, "while") == 0) type = TOKEN_WHILE;
             else if (isdigit(buffer[0])) type = TOKEN_NUMBER;
 
             writeTk(type, buffer, opFile);

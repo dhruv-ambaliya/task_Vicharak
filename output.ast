@@ -3,40 +3,21 @@ Declaration: type=int, identifier=b
 Declaration: type=int, identifier=c
 Assignment: identifier=a expression: Number(10) 
 Assignment: identifier=b expression: Identifier(a) 
-Arithmetic: identifier=c expression: Identifier(a) Operator(+) Identifier(b) 
-Arithmetic: identifier=a expression: Number(5) Operator(*) Identifier(c) 
-Output: Identifier(a)
-Arithmetic: identifier=b expression: Identifier(a) Operator(/) Number(5) 
+Assignment: identifier=c expression: Number(5) 
+WhileStatement: condition: Identifier(b) Comparison(>=) Identifier(c)
+do:
 Output: Identifier(b)
-IfStatement: condition: Number(10) Comparison(==) Number(11)
+Arithmetic: identifier=b expression: Identifier(b) Operator(-) Number(1) 
+endwhile
+WhileStatement: condition: Identifier(b) Comparison(<=) Identifier(a)
+do:
+Output: Identifier(c)
+endwhile
+IfStatement: condition: Identifier(b) Comparison(>) Identifier(c)
 then:
-Declaration: type=int, identifier=d
-Assignment: identifier=d expression: Number(5) 
-Output: Identifier(d)
-IfStatement: condition: Number(20) Comparison(==) Identifier(c)
-then:
-Arithmetic: identifier=a expression: Identifier(a) Operator(+) Identifier(b) 
-IfStatement: condition: Identifier(b) Comparison(<) Number(10)
-then:
-Declaration: type=int, identifier=x
-Assignment: identifier=x expression: Identifier(a) 
+Output: Identifier(c)
 endif
-Else:
-Assignment: identifier=a expression: Identifier(b) 
-endelse
-endif
-Else:
-Assignment: identifier=b expression: Identifier(a) 
-endelse
-endif
-Else:
-Arithmetic: identifier=b expression: Number(5) Operator(-) Number(5) 
-Output: Identifier(b)
-IfStatement: condition: Identifier(b) Comparison(<) Number(10)
-then:
-Assignment: identifier=a expression: Identifier(x) 
-endif
-Else:
-Assignment: identifier=b expression: Identifier(a) 
-endelse
-endelse
+WhileStatement: condition: Identifier(b) Comparison(<=) Identifier(a)
+do:
+Output: Identifier(c)
+endwhile

@@ -166,7 +166,7 @@ void parseStmt(FILE *ipFile, FILE *outputFile, Token *token) {
         fprintf(outputFile, "Output: %s(%s)\n", strcmp(token->type, "TOKEN_IDENTIFIER") == 0 ? "Identifier" : "Number", token->value);
         readTk(ipFile, token, "TOKEN_RPAREN");
         readTk(ipFile, token, "TOKEN_SEMICOLON"); 
-    }    else if (strcmp(token->type, "TOKEN_IF") == 0) {
+    }    else if (strcmp(token->type, "TOKEN_IF") == 0) { // If statement
         readTk(ipFile, token, "TOKEN_LPAREN");  // Expect (
         fprintf(outputFile, "IfStatement: condition: ");
         parseComp(ipFile, outputFile);
@@ -209,6 +209,29 @@ void parseStmt(FILE *ipFile, FILE *outputFile, Token *token) {
         } else {
             fseek(ipFile, pos, SEEK_SET); // Rewind if no else
         }
+    } else if (strcmp(token->type, "TOKEN_WHILE") == 0) { // While statement
+        readTk(ipFile, token, "TOKEN_LPAREN");  // Expect (
+        fprintf(outputFile, "WhileStatement: condition: ");
+        parseComp(ipFile, outputFile);
+        readTk(ipFile, token, "TOKEN_RPAREN");  // Expect )
+        fprintf(outputFile, "do:\n");
+               // Check for '{'
+        if (!readTk(ipFile, token, NULL) || strcmp(token->type, "TOKEN_LBRACE") != 0) {
+            printf("\nSyntax error on line %d: expected '{' at the start of if block\n\n", lineNumber);
+            exit(1);
+        }
+
+        while (readTk(ipFile, token, NULL) && strcmp(token->type, "TOKEN_RBRACE") != 0) {
+            parseStmt(ipFile, outputFile, token);
+        }
+
+        // Check for '}'
+        if (strcmp(token->type, "TOKEN_RBRACE") != 0) {
+            printf("\nSyntax error on line %d: expected '}' at the end of if block\n\n", lineNumber);
+            exit(1);
+        }
+        fprintf(outputFile, "endwhile\n");
+
     } else {
         printf("\nSyntax error on line %d: unexpected token '%s'\n\n", lineNumber, token->value);
         exit(1);

@@ -5,7 +5,7 @@
 #define MAX_LINE_LENGTH 256
 #define MAX_VARIABLES 100
 
-int ifCount = 0, elseCount = 0, divCount = 0, multiCount = 0;
+int ifCount = 0, elseCount = 0, whileCount = 0, divCount = 0, multiCount = 0;
 
 void handleArith(char *line, FILE *outputFile) {
     char lhs[MAX_LINE_LENGTH], rhs1[MAX_LINE_LENGTH], rhs2[MAX_LINE_LENGTH], operator[MAX_LINE_LENGTH];
@@ -97,18 +97,62 @@ void handleInstruction(char *line, FILE *outputFile, FILE *inFile) {
         } else{
             fprintf(outputFile, "    ldi A %s\n    out 0\n", rhs1);
         }
+    }  else if (strstr(line, "WhileStatement")) { 
+        int localWhileCount = whileCount++;
+        
+        // Print the while loop label
+        fprintf(outputFile, "\nwhile_loop_%d:\n", localWhileCount);
+        fprintf(outputFile, "whilecondition_%d:\n", localWhileCount);
+        
+        // Generate code for the comparison
+        if (sscanf(line, "WhileStatement: condition: Identifier(%[^)]) Comparison(%[^)]) Identifier(%[^)])", lhs, op, rhs1) == 3) {
+            fprintf(outputFile, "    lda %%%s\n    mov B A\n    lda %%%s\n    cmp\n", rhs1, lhs);
+        } else if (sscanf(line, "WhileStatement: condition: Identifier(%[^)]) Comparison(%[^)]) Number(%[^)])", lhs, op, rhs1) == 3) {
+            fprintf(outputFile, "    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n", rhs1, lhs);
+        } else if (sscanf(line, "WhileStatement: condition: Number(%[^)]) Comparison(%[^)]) Identifier(%[^)])", lhs, op, rhs1) == 3) {
+            fprintf(outputFile, "    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n", lhs, rhs1);
+        } else if (sscanf(line, "WhileStatement: condition: Number(%[^)]) Comparison(%[^)]) Number(%[^)])", lhs, op, rhs1) == 3) {
+            fprintf(outputFile, "    ldi A %s\n    mov B A\n    ldi A %s\n    cmp\n", lhs, rhs1);
+        }
+        
+        // Generate the conditional jump to exit the loop based on comparison operator
+        if (strcmp(op, "!=") == 0) fprintf(outputFile, "    je %%while_end_%d\n", localWhileCount);
+        else if (strcmp(op, "==") == 0) fprintf(outputFile, "    jne %%while_end_%d\n", localWhileCount);
+        else if (strcmp(op, "<") == 0) fprintf(outputFile, "    jnc %%while_end_%d\n    je %%while_end_%d\n", localWhileCount, localWhileCount);
+        else if (strcmp(op, ">") == 0) fprintf(outputFile, "    jc %%while_end_%d\n    je %%while_end_%d\n", localWhileCount, localWhileCount);
+        else if (strcmp(op, "<=") == 0) fprintf(outputFile, "    jnc %%while_end_%d\n", localWhileCount);
+        else if (strcmp(op, ">=") == 0) fprintf(outputFile, "    jc %%while_end_%d\n", localWhileCount);
+        
+        // Process the loop body
+        fgets(nextLine, sizeof(nextLine), inFile);
+        if (strstr(nextLine, "do:")) {
+            // Loop body
+            while (fgets(nextLine, sizeof(nextLine), inFile)) {
+                if (strstr(nextLine, "endwhile")) {
+                    // End of loop body
+                    break;
+                } else {
+                    // Process statements in loop body
+                    handleInstruction(nextLine, outputFile, inFile);
+                }
+            }
+        }
+        
+        // Jump back to the beginning of the loop
+        fprintf(outputFile, "    jmp %%while_loop_%d\n", localWhileCount);
+        fprintf(outputFile, "while_end_%d:\n", localWhileCount);
     } else if (strstr(line, "IfStatement")) { 
         int localIfCount = ifCount++;
         if (sscanf(line, "IfStatement: condition: Identifier(%[^)]) Comparison(%[^)]) Identifier(%[^)])", lhs, op, rhs1) == 3) {
-            fprintf(outputFile, "\ncondition_%d:\n    lda %%%s\n    mov B A\n    lda %%%s\n    cmp\n", localIfCount, rhs1, lhs);
+            fprintf(outputFile, "\nifcondition_%d:\n    lda %%%s\n    mov B A\n    lda %%%s\n    cmp\n", localIfCount, rhs1, lhs);
         } else if (sscanf(line, "IfStatement: condition: Identifier(%[^)]) Comparison(%[^)]) Number(%[^)])", lhs, op, rhs1) == 3) {
-            fprintf(outputFile, "\ncondition_%d:\n    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n", localIfCount, rhs1, lhs);
+            fprintf(outputFile, "\nifcondition_%d:\n    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n", localIfCount, rhs1, lhs);
         } else if (sscanf(line, "IfStatement: condition: Number(%[^)]) Comparison(%[^)]) Identifier(%[^)])", lhs, op, rhs1) == 3) {
-            fprintf(outputFile, "\ncondition_%d:\n    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n",localIfCount, lhs, rhs1);
+            fprintf(outputFile, "\nifcondition_%d:\n    ldi A %s\n    mov B A\n    lda %%%s\n    cmp\n",localIfCount, lhs, rhs1);
         } else if (sscanf(line, "IfStatement: condition: Number(%[^)]) Comparison(%[^)]) Number(%[^)])", lhs, op, rhs1) == 3) {
-            fprintf(outputFile, "\ncondition_%d:\n    ldi A %s\n    mov B A\n    ldi A %s\n    cmp\n",localIfCount, lhs, rhs1);
+            fprintf(outputFile, "\nifcondition_%d:\n    ldi A %s\n    mov B A\n    ldi A %s\n    cmp\n",localIfCount, lhs, rhs1);
         }
-        // for comparison
+        // for comparison 
         if (strcmp(op, "!=") == 0) fprintf(outputFile, "    je %%endif_%d\n", localIfCount);
         else if (strcmp(op, "==") == 0) fprintf(outputFile, "    jne %%endif_%d\n", localIfCount);
         else if (strcmp(op, "<") == 0) fprintf(outputFile, "    jnc %%endif_%d\n    je %%endif_%d\n", localIfCount, localIfCount);
@@ -118,7 +162,7 @@ void handleInstruction(char *line, FILE *outputFile, FILE *inFile) {
 
         fgets(nextLine, sizeof(nextLine), inFile);
         if (strstr(nextLine, "then:")) {
-            fprintf(outputFile, "startif_%d:", localIfCount);
+            fprintf(outputFile, "startif_%d:\n", localIfCount);
         }
 
         while (fgets(nextLine, sizeof(nextLine), inFile)) {
