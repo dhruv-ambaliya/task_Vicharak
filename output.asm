@@ -35,30 +35,4 @@ whilecondition_0:
     jmp %while_loop_0
 while_end_0:
 
-while_loop_1:
-whilecondition_1:
-    lda %a
-    mov B A
-    lda %b
-    cmp
-    jnc %while_end_1
-    lda %c
-    out 0
-    jmp %while_loop_1
-while_end_1:
-
-ifcondition_0:
-    lda %c
-    mov B A
-    lda %b
-    cmp
-    jc %endif_0
-    je %endif_0
-startif_0:
-    lda %c
-    out 0
-endif_0:
-    lda %c
-    out 0
-
 hlt

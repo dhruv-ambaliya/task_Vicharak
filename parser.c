@@ -209,13 +209,13 @@ void parseStmt(FILE *ipFile, FILE *outputFile, Token *token) {
         } else {
             fseek(ipFile, pos, SEEK_SET); // Rewind if no else
         }
-    } else if (strcmp(token->type, "TOKEN_WHILE") == 0) { // While statement
-        readTk(ipFile, token, "TOKEN_LPAREN");  // Expect (
+    } else if (strcmp(token->type, "TOKEN_WHILE") == 0) {
+        readTk(ipFile, token, "TOKEN_LPAREN");  
         fprintf(outputFile, "WhileStatement: condition: ");
         parseComp(ipFile, outputFile);
-        readTk(ipFile, token, "TOKEN_RPAREN");  // Expect )
+        readTk(ipFile, token, "TOKEN_RPAREN"); 
         fprintf(outputFile, "do:\n");
-               // Check for '{'
+         
         if (!readTk(ipFile, token, NULL) || strcmp(token->type, "TOKEN_LBRACE") != 0) {
             printf("\nSyntax error on line %d: expected '{' at the start of if block\n\n", lineNumber);
             exit(1);

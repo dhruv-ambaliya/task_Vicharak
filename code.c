@@ -126,19 +126,14 @@ void handleInstruction(char *line, FILE *outputFile, FILE *inFile) {
         // Process the loop body
         fgets(nextLine, sizeof(nextLine), inFile);
         if (strstr(nextLine, "do:")) {
-            // Loop body
             while (fgets(nextLine, sizeof(nextLine), inFile)) {
                 if (strstr(nextLine, "endwhile")) {
-                    // End of loop body
                     break;
                 } else {
-                    // Process statements in loop body
                     handleInstruction(nextLine, outputFile, inFile);
                 }
             }
         }
-        
-        // Jump back to the beginning of the loop
         fprintf(outputFile, "    jmp %%while_loop_%d\n", localWhileCount);
         fprintf(outputFile, "while_end_%d:\n", localWhileCount);
     } else if (strstr(line, "IfStatement")) { 

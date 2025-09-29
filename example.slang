@@ -9,12 +9,3 @@ while(b >= c){
     out(b);
     b = b - 1;
 }
-while(b<=a){
-    out(c);
-}
-if(b > c){
-    out(c);
-}
-while(b<=a){
-    out(c);
-}

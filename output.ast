@@ -9,15 +9,3 @@ do:
 Output: Identifier(b)
 Arithmetic: identifier=b expression: Identifier(b) Operator(-) Number(1) 
 endwhile
-WhileStatement: condition: Identifier(b) Comparison(<=) Identifier(a)
-do:
-Output: Identifier(c)
-endwhile
-IfStatement: condition: Identifier(b) Comparison(>) Identifier(c)
-then:
-Output: Identifier(c)
-endif
-WhileStatement: condition: Identifier(b) Comparison(<=) Identifier(a)
-do:
-Output: Identifier(c)
-endwhile
